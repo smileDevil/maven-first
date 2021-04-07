@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="goods">
+    <select id="selectAll" resultType="com.jyb.jdbc.mybatis.entity.Goods">
+        select  * from t_goods order by goods_id  limit 10
+    </select>
+    <select id="selectById" parameterType="Integer" resultType="com.jyb.jdbc.mybatis.entity.Goods">
+        select * from t_goods where goods_id = #{value}
+    </select>
+
+    <select id="selectByPriceRange" parameterType="java.util.Map" resultType="com.jyb.jdbc.mybatis.entity.Goods">
+        select * from t_goods where current_price between #{min} and #{max} order by current_price    </select>
+
+<!--    resultType="java.util.Map" 返回结果乱序， 所以使用LinkedHashMap-->
+    <select id="selectGoodsMap" resultType="java.util.LinkedHashMap">
+        select g.* , c.category_name , 1 as test from  t_goods g,t_category c
+        where g.category_id = c.category_id
+    </select>
+<!--    多表联查 使用ResultMap映射对象-->
+<!--    //resultType 指向对象 , resultMap 结果映射-->
+    <resultMap id="rmGoods" type="com.jyb.jdbc.mybatis.dto.GoodsDTO">
+<!--        设置主键-->
+        <id property="goods.goodsId" column="goods_id"></id>
+<!--        其余对象-->
+        <result property="goods.title" column="title"></result>
+        <result property="goods.originalCost" column="original_cost"></result>
+        <result property="goods.currentPrice" column="current_price"></result>
+        <result property="goods.discount" column="discount"></result>
+        <result property="goods.categoryId" column="category_id"></result>
+        <result property="category.categoryId" column="category_id"></result>
+        <result property="category.categoryName" column="category_name"></result>
+        <result property="test" column="test"></result>
+    </resultMap>
+    <select id="selectGoodsDTO" resultMap="rmGoods">
+            select g.* , c.* , 1 as test from  t_goods g,t_category c
+        where g.category_id = c.category_id
+    </select>
+
+<!--   插入 -->
+    <insert id = "insert" parameterType="com.jyb.jdbc.mybatis.entity.Goods">
+        INSERT INTO t_goods(title,sub_title,original_cost,current_price,discount,category_id)
+        VALUE (#{title},#{subTitle},#{originalCost},#{currentPrice},#{discount},#{categoryId})
+--         selectKye 帮助主键回填， 让你能获取到新增对数据id  last_insert_id()是mysql自带对获取当前最后一跳数据id
+        <selectKey resultType="Integer" keyProperty="goodsId" order="AFTER">
+            select last_insert_id()
+        </selectKey>
+    </insert>
+
+    <!--   插入 通过UserGeneratedKeys 获取主键值  -->
+    <insert id = "insertUserGeneratedKeys"
+            parameterType="com.jyb.jdbc.mybatis.entity.Goods"
+            useGeneratedKeys="true"
+            keyProperty="goodsId"
+            keyColumn="goods_id">
+        INSERT INTO t_goods(title,sub_title,original_cost,current_price,discount,category_id)
+        VALUE (#{title},#{subTitle},#{originalCost},#{currentPrice},#{discount},#{categoryId})
+    </insert>
+<!--更新-->
+    <update id="updateGoods" parameterType="com.jyb.jdbc.mybatis.entity.Goods">
+        UPDATE  t_goods SET title = #{title},sub_title = #{subTitle},original_cost = #{originalCost}, current_price = #{currentPrice},discount = #{discount},category_id = #{categoryId} where goods_id = #{goodsId}
+    </update>
+
+<!--  删除-->
+    <delete id="deleteGoods" parameterType="Integer">
+        DELETE from t_goods where goods_id = #{value }
+    </delete>
+
+</mapper>

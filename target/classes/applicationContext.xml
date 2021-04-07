@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans
+        https://www.springframework.org/schema/beans/spring-beans.xsd">
+<!--在IOC容器启动时，自动由Spring实例化Apple对象， 取名sweetApple放入到容器-->
+<!--    IoC自动利用反射机制运行时调用setxxx方法为属性赋值-->
+    <bean id="sweetApple" class="com.jyb.spring.ioc.entity.Apple" >
+        <property name="title" value="红富士"></property>
+        <property name="origin" value="欧洲"></property>
+        <property name="color" value="红色"></property>
+    </bean>
+<!--    ref 来进行对象的apple 的set设置-->
+        <bean id="lily" class="com.jyb.spring.ioc.entity.Child" >
+            <property name="name" value="莉莉"></property>
+            <property name="apple" ref="sweetApple"></property>
+        </bean>
+<!--    使用构造方法注入依赖-->
+        <bean id="andy" class="com.jyb.spring.ioc.entity.Child" >
+            <constructor-arg name="name" value="安迪"></constructor-arg>
+            <constructor-arg name="apple" ref="sweetApple"></constructor-arg>
+        </bean>
+    <bean id="apple2" class="com.jyb.spring.ioc.entity.Apple" >
+        <constructor-arg name="title" value="红富士" ></constructor-arg>
+        <constructor-arg name="color" value="红色" ></constructor-arg>
+        <constructor-arg name="origin" value="欧洲" ></constructor-arg>
+    </bean>
+<!--    <bean id="sourApple" class="com.jyb.spring.ioc.entity.Apple" >-->
+<!--        <property name="title" value="青苹果"></property>-->
+<!--        <property name="origin" value="中亚"></property>-->
+<!--        <property name="color" value="绿色"></property>-->
+<!--    </bean>-->
+
+<!--    <bean id="softApple" class="com.jyb.spring.ioc.entity.Apple" >-->
+<!--        <property name="title" value="金帅"></property>-->
+<!--        <property name="origin" value="中国"></property>-->
+<!--        <property name="color" value="黄色"></property>-->
+<!--    </bean>-->
+
+
+
+<!--    <bean id="luna" class="com.jyb.spring.ioc.entity.Child" >-->
+<!--        <property name="name" value="露娜"></property>-->
+<!--        <property name="apple" ref="softApple"></property>-->
+<!--    </bean>-->
+<!--通过代餐构造方法实例化-->
+    <bean id="apple1" class="com.jyb.spring.ioc.entity.Apple" >
+    </bean>
+
+<!--    通过静态工厂实例化-->
+    <bean id="apple4" class="com.jyb.spring.ioc.factory.AppleStaticFactory" factory-method="createSweetApple"></bean>
+
+<!--    集合对象注入-->
+<!--    list-->
+    <bean id="company" class="com.jyb.spring.ioc.entity.Company">
+        <property name="rooms">
+            <list>
+                <value>2001-总裁办</value>
+                <value>2002-研发部</value>
+                <value>2003-会议室</value>
+            </list>
+        </property>
+    </bean>
+
+</beans>

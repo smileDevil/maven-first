@@ -1,0 +1,64 @@
+package com.jyb.jdbc.hrapp.Command;
+
+import java.sql.*;
+import java.util.Scanner;
+
+public class PstmtQueryCommand implements  Command{
+    String SQLURL = "jdbc:mysql://localhost:3306/imooc?useSSL=false&useUnicode=true&characterEncoding=UTF-8&serverTimezone=Asia/Shanghai&allowPublicKeyRetrieval=true";
+    String SQLUSER = "root";
+    String SQLPSD = "rootroot";
+    Connection conn = null;
+    PreparedStatement stmt = null;
+    ResultSet rs =null;
+    @Override
+    public void execute() {
+        System.out.println("打印部门名称");
+        Scanner in = new Scanner(System.in);
+        String pdname = in.next();
+        try {
+            Class.forName("com.mysql.cj.jdbc.Driver");
+        }catch (ClassNotFoundException e){
+            e.printStackTrace();
+        }
+        try {
+            conn = DriverManager.getConnection(SQLURL,SQLUSER,SQLPSD);
+            String query = "select * from employee where dname=?";
+            stmt = conn.prepareStatement(query);
+            stmt.setString(1,pdname);
+//            ResultSet 结果集
+            rs = stmt.executeQuery();
+            //循环遍历 rs.next是否存在下一条数据
+            while (rs.next()){
+                Integer eno = rs.getInt(1);//JDBC中索引从1 开始 而不是数组的0
+                String ename = rs.getString(2);
+                String dename = rs.getString(3);
+                System.out.println(ename + "  " + dename);
+            }
+        }catch (SQLException e){
+            e.printStackTrace();
+        }finally {
+            try {
+                if(rs != null) {
+                    rs.close();
+                }
+            } catch (SQLException throwables) {
+                throwables.printStackTrace();
+            }
+            try {
+                if(stmt != null) {
+                    stmt.close();
+                }
+            } catch (SQLException throwables) {
+                throwables.printStackTrace();
+            }
+            try {
+                if(conn!=null && conn.isClosed() == false){
+                    conn.close();
+                }
+            }catch (Exception e){
+
+            }
+        }
+    }
+}
+
